@@ -16,7 +16,7 @@ Also, this repository can be used to do this for basically every game. I might m
 Basically, replace `doom.py` with your own game, make it handle the joycon inputs and save the frame buffer at `static/img.jpg`. Keep the resolution and jpeg quality on the lower side and you're good to go.
 
 ## How do I use this?
-(This works on Linux. I haven't tried this on Windows or OSX but I suppose it should work. You will have to make yourself a run.bat to replace the run.sh for Windows.)
+(This works on Linux (Manjaro). I haven't tried this on Windows or OSX but I suppose it should work there too. You will have to make yourself a `run.bat` to replace the `run.sh` for Windows.)
 
 This guide assumes you are using `python3.x` under the alias `python` and `pip3` under the alias `pip` (i.e. Arch/Manjaro). 
 
