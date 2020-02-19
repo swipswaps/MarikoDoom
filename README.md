@@ -23,7 +23,7 @@ This guide assumes you are using `python3.x` under the alias `python` and `pip3`
 If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the guide and `run.sh`.
 
 1. Clone this repository
-2. Install the dependencies
+2. Install the dependencies (On raspbian python-opencv does not exist for pip. For installation instructions see [here](https://raspberrypi.stackexchange.com/questions/95982/how-to-install-opencv-on-raspbian-stretch))
 
    `pip install flask cython vizdoom python-opencv --user`
 3. Download doom1.wad
