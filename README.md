@@ -1,7 +1,7 @@
 # MarikoDoom
 Play Doom on your Nintendo Switch without CFW!
 
-## What is this? What isn't it?
+## What is this?
 This repository lets you play the original Doom (shareware) in your Nintendo Switch's hidden browser. No costum firmware needed.
 
 Though, it won't be running on your Switch but rather on the computer you are running the server on.
