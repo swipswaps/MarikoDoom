@@ -36,7 +36,6 @@ Basically, replace `doom.py` with your own game, make it handle the joycon input
    For more informations see: [switchbru.com](https://www.switchbru.com/dns/)
 7. Find out your computers IP address and enter this as URL on the SwitchBru portal. Add it as costum link for convenience.
 
-   `ip address`   
    `<YOUR_IP>:8080`
 8. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
 
