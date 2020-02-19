@@ -25,7 +25,7 @@ If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the g
 1. Clone this repository
 2. Install the dependencies
 
-   `pip install flask vizdoom python-opencv --user`
+   `pip install flask cython vizdoom python-opencv --user`
 3. Download doom1.wad
 
    `wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad && mv doom1.wad scenarios/.`
