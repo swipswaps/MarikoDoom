@@ -18,6 +18,10 @@ Basically, replace `doom.py` with your own game, make it handle the joycon input
 ## How do I use this?
 (This works on Linux. I haven't tried this on Windows or OSX but I suppose it should work. You will have to make yourself a run.bat to replace the run.sh for Windows.)
 
+This guide assumes you are using `python3.x` under the alias `python` and `pip3` under the alias `pip` (i.e. Arch/Manjaro). 
+
+If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the guide and `run.sh`.
+
 1. Clone this repository
 2. Install the dependencies
 
