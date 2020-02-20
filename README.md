@@ -23,6 +23,10 @@ This guide assumes you are using `python3.x` under the alias `python` and `pip3`
 If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the guide and `run.sh`.
 
 1. Clone this repository
+   ```bash
+   git clone https://github.com/z80z80z80/MarikoDoom.git
+   cd MarikoDoom
+   ```
 2. Install the dependencies (On raspbian python-opencv does not exist for pip. For installation instructions see [here](https://raspberrypi.stackexchange.com/questions/95982/how-to-install-opencv-on-raspbian-stretch))
 
    `pip install flask cython vizdoom python-opencv --user`
