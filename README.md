@@ -2,11 +2,13 @@
 Play Doom on your Nintendo Switch without CFW!
 
 ## What is this?
-This repository lets you play the original Doom (shareware) in your Nintendo Switch's hidden browser. No costum firmware needed.
+This repository lets you play the levels of the original Doom (shareware) in your Nintendo Switch's hidden browser. No costum firmware needed.
 
 Though, it won't be running on your Switch but rather on the computer you are running the server on.
 
-Effectively this is a crude game streaming server with kind of high latency, low resolution and "some" (lol) dropped frames, so yes, even worse than Stadia ;)
+Effectively this is a crude game streaming server with kind of high latency, low resolution and "some" (lol) dropped frames, so yes, worse than Stadia ;) 
+
+To keep it simple, I used ViZDoom as my engine since it allows easy access to the frame buffer. I tried to build a screen casting application first but the delay was huge since I could not figure out a way to access the screen's frame buffer with more than 10 FPS (at least on my computer). I'm aware there are projects like [this](https://www.linux-projects.org/uv4l/tutorials/play-retropie-in-browser/) that do something pretty similar to what I did. However they use features (WebRTC) the browser does not support. In the future I might look into porting that to my engine though.
 
 ## But... why?
 Because everything needs to run Doom. Even patched Switch devices (Mariko and Lite) that to this date can't use soft modding exploits to run unsigned code.
@@ -28,11 +30,19 @@ If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the g
    cd MarikoDoom
    ```
 2. Install the dependencies (On raspbian python-opencv does not exist for pip. For installation instructions see [here](https://raspberrypi.stackexchange.com/questions/95982/how-to-install-opencv-on-raspbian-stretch))
-
+   
+   First, make sure you have all [ViZDoom dependencies](https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#linux_deps) installed.
+   
+   After that, install the python dependencies:
+   
    `pip install flask cython vizdoom python-opencv --user`
+   
 3. Download doom1.wad
 
-   `wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad && mv doom1.wad scenarios/.`
+   ```bash
+   wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad
+   mv doom1.wad scenarios/.
+   ```
 4. Make run.sh executable
 
    `chmod +X run.sh`
