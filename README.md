@@ -43,9 +43,12 @@ If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the g
    wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad
    mv doom1.wad scenarios/.
    ```
-4. Make run.sh executable
+4. Make run.sh and stop.sh executable
 
-   `chmod +X run.sh`
+   ```bash
+   chmod +x run.sh
+   chmod +x stop.sh
+   ```
 5. Run the server
 
    `./run.sh`
@@ -56,6 +59,9 @@ If you use python3/pip3 (i.e. Ubuntu/Raspbian) change those accordingly in the g
 
    `<YOUR_IP>:8080`
 8. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
+
+9. To shut down the server:
+   `./stop.sh`
 
 ## Controls
 The usable buttons are a bit limited since the browser uses B to go back and X to close the browser.

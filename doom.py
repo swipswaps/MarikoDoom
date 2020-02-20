@@ -114,8 +114,8 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(0.001)
     # Bind the socket to the port
-    server_address = ('localhost', 10000)
-    print(" * Doom server starting up on {} port {}".format(*server_address))
+    server_address = ('localhost', 1312)
+    print(" * Doom starting up.")
     sock.bind(server_address)
    
     while True:        
