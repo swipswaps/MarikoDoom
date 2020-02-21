@@ -62,7 +62,18 @@ def init(scenario, map):
     game.add_available_button(vzd.Button.SELECT_NEXT_WEAPON)  
 
     # Adds game variables that will be included in state.
+    game.add_available_game_variable(vzd.GameVariable.HEALTH)
+    game.add_available_game_variable(vzd.GameVariable.ARMOR)
+    game.add_available_game_variable(vzd.GameVariable.AMMO0)
+    game.add_available_game_variable(vzd.GameVariable.AMMO1)
     game.add_available_game_variable(vzd.GameVariable.AMMO2)
+    game.add_available_game_variable(vzd.GameVariable.AMMO3)
+    game.add_available_game_variable(vzd.GameVariable.AMMO4)
+    game.add_available_game_variable(vzd.GameVariable.AMMO5)
+    game.add_available_game_variable(vzd.GameVariable.AMMO6)
+    game.add_available_game_variable(vzd.GameVariable.AMMO7)
+    game.add_available_game_variable(vzd.GameVariable.AMMO8)
+    game.add_available_game_variable(vzd.GameVariable.AMMO9)
 
     # Causes episodes to finish after 200 tics (actions)
     game.set_episode_timeout(0)
@@ -72,6 +83,9 @@ def init(scenario, map):
 
     # Enable sound from host
     game.set_sound_enabled(True)
+
+    # render all frames between states
+    game.set_render_all_frames(True)
 
     # Makes the window appear (turned on by default)
     game.set_window_visible(False)
@@ -88,7 +102,7 @@ def init(scenario, map):
 
     return game
 
-def fpscounter(img, fps):
+def fpscounter(img, fps): # shows server side fps counter
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (375,15)
     fontScale              = 0.5
@@ -99,7 +113,48 @@ def fpscounter(img, fps):
 
     return img
 
+def get_variables(game):
+    game_variables = [vzd.GameVariable.HEALTH, 
+                      vzd.GameVariable.ARMOR, 
+                      vzd.GameVariable.AMMO0, 
+                      vzd.GameVariable.AMMO1, 
+                      vzd.GameVariable.AMMO2, 
+                      vzd.GameVariable.AMMO3, 
+                      vzd.GameVariable.AMMO4, 
+                      vzd.GameVariable.AMMO5, 
+                      vzd.GameVariable.AMMO6, 
+                      vzd.GameVariable.AMMO7, 
+                      vzd.GameVariable.AMMO8, 
+                      vzd.GameVariable.AMMO9]
+    print(game.get_available_game_variables())
+    variables = []
+
+    for var in game_variables:
+        variables.append(game.get_game_variable(var))
+
+    return variables
+
+def set_variables(game, variables):
+    game_variables = [vzd.GameVariable.HEALTH,
+                      vzd.GameVariable.ARMOR,
+                      vzd.GameVariable.AMMO0,
+                      vzd.GameVariable.AMMO1,
+                      vzd.GameVariable.AMMO2,
+                      vzd.GameVariable.AMMO3,
+                      vzd.GameVariable.AMMO4,
+                      vzd.GameVariable.AMMO5,
+                      vzd.GameVariable.AMMO6,
+                      vzd.GameVariable.AMMO7,
+                      vzd.GameVariable.AMMO8,
+                      vzd.GameVariable.AMMO9]
+
+ #   for var in game_variables:
+
+
+    return game
+
 def main():
+    survived = False
     joystep = 1
     maxjoystep = 2
     frame_timeout = 0.01
@@ -117,10 +172,18 @@ def main():
     server_address = ('localhost', 1312)
     print(" * Doom starting up.")
     sock.bind(server_address)
-   
+
     while True:        
-        game = init(scenario, "E1M" + str(map))
+#        if i>0: # store variables
+#           variables = get_variables(game)
+
+        game = init(scenario, "E1M" + str(map)) # load map
+        
+#        if survived: # restore variables
+#           game = set_variables(game, variables)
+
         data = 0
+
         while not game.is_episode_finished():        
             # Gets the state
             state = game.get_state()    
@@ -200,12 +263,17 @@ def main():
 
         if game.get_last_reward() == 1:
             map += 1
+            survived = True
             print(" * Level finished.")
         else:
+            survived = False
             print(" * Player died. Restart level.")
         print("   Total reward:", game.get_total_reward())
         print("   ************************") 
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except vzd.vizdoom.ViZDoomUnexpectedExitException:
+        pass # surppress error message from stop.sh
