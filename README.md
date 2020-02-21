@@ -8,7 +8,7 @@ Though, it won't be running on your Switch but rather on the computer you are ru
 
 Effectively this is a crude game streaming server with kind of high latency, low resolution and "some" (lol) dropped frames, so yes, worse than Stadia ;) 
 
-To keep it simple, I used ViZDoom as my engine since it allows easy access to the frame buffer. I tried to build a screen casting application first but the delay was huge since I could not figure out a way to access the screen's frame buffer with more than 10 FPS (at least on my computer). I'm aware there are projects like [this](https://www.linux-projects.org/uv4l/tutorials/play-retropie-in-browser/) that do something pretty similar to what I did. However they use features (WebRTC) the browser does not support. In the future I might look into porting that to my engine though.
+To keep it simple, I used ViZDoom as my engine since it allows easy access to the frame buffer.
 
 ## But... why?
 Because everything needs to run Doom. Even patched Switch devices (Mariko and Lite) that to this date can't use soft modding exploits to run unsigned code.
