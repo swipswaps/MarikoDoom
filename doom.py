@@ -1,8 +1,8 @@
 import vizdoom as vzd
 import cv2, os 
 from time import sleep, time
-import socket, select
-import sys
+import socket
+import argparse
 
 def init(scenario, map):
     # Create DoomGame instance. It will run the game and communicate with you.
@@ -19,21 +19,6 @@ def init(scenario, map):
 
     # Sets the screen buffer format. Not used here but now you can change it. Default is CRCGCB.
     game.set_screen_format(vzd.ScreenFormat.RGB24)
-
-    # Enables depth buffer.
-    game.set_depth_buffer_enabled(False)
-
-    # Enables labeling of in game objects labeling.
-    game.set_labels_buffer_enabled(False)
-
-    # Enables buffer with top down map of the current episode/level.
-    game.set_automap_buffer_enabled(False)
-
-    # Enables information about all objects present in the current episode/level.
-    game.set_objects_info_enabled(False)
-
-    # Enables information about all sectors (map layout).
-    game.set_sectors_info_enabled(False)
 
     # Sets other rendering options (all of these options except crosshair are enabled (set to True) by default)
     game.set_render_hud(True)
@@ -85,6 +70,51 @@ def init(scenario, map):
 
     return game
 
+def gen_actions(data):
+    if data == "INIT":
+        print(" * Client connected.")
+    elif data == "left_down": #TURN_LEFT
+        action=[True, False, 0, False, False, False, False, 0, False, False, False, False]
+    elif data == "right_down": #TURN_RIGHT
+        action=[False, True, 0, False, False, False, False, 0, False, False, False, False]
+    elif data[0:7] == "Stick;1": #TURN_LEFT_RIGHT_DELTA + MOVE_FORWARD_BACKWARD_DELTA
+        if joystep < maxjoystep:
+            joystep+=1
+            ax0 = ((float(data.split(";")[2])*10)/maxjoystep)*joystep
+            ax1 = ((-float(data.split(";")[3])*30)/maxjoystep)*joystep
+            action=[False, False, 0, False, False, False, False, 0, False, False, False, False]
+            if ax0 < -1.5:
+                action[0]=True
+            elif ax0 > 1.5:
+                action[1]=True
+            if ax1 < -15:
+                action[6]=True
+            elif ax1 > 15:
+                action[5]=True
+        else:
+            data = 0 
+            joystep = 0
+    elif data == "sl_down": #MOVE_LEFT
+        action=[False, False, 0, True, False, False, False, 0, False, False, False, False]  
+    elif data == "sr_down": #MOVE_RIGHT
+        action=[False, False, 0, False, True, False, False, 0, False, False, False, False]                   
+    elif data == "up_down": #MOVE_FORWARD
+        action=[False, False, 0, False, False, True, False, 0, False, False, False, False]
+    elif data == "down_down": #MOVE_BACKWARD
+        action=[False, False, 0, False, False, False, True, 0, False, False, False, False]
+    elif data == "a_down": #ATTACK
+        action=[False, False, 0, False, False, False, False, 0, True, False, False, False]
+    elif data == "y_down": #USE
+        action=[False, False, 0, False, False, False, False, 0, False, True, False, False]
+    elif data == "zl_down": #SELECT_PREV_WEAPON
+        action=[False, False, 0, False, False, False, False, 0, False, False, True, False]
+    elif data == "zr_down": #SELECT_NEXT_WEAPON
+        action=[False, False, 0, False, False, False, False, 0, False, False, False, True]                   
+    else:
+        action=[False, False, 0, False, False, False, False, 0, False, False, False, False]
+
+    return data, joystep, action
+
 def fpscounter(img, fps): # shows server side fps counter
     font                   = cv2.FONT_HERSHEY_SIMPLEX
     bottomLeftCornerOfText = (375,15)
@@ -96,30 +126,63 @@ def fpscounter(img, fps): # shows server side fps counter
 
     return img
 
-def main():
+def find_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("duckduckgo.com", 80))
+    ip = s.getsockname()[0]
+    s.close()
+    
+    return ip
+
+def parse_arg():
+    parser = argparse.ArgumentParser(description='ViZDoom based Doom server.', usage='python %(prog)s [options]')
+    parser.add_argument('--nosound', dest='sound', default=True, help='decativate sound on the host')
+    parser.add_argument('--http', dest='http_port', default=8080, metavar='PORT', help='port of the http server')
+    parser.add_argument('--fps', dest='server_fps', default=False, help='show the server side fps in the top left corner')
+    parser.add_argument('--maxfps', dest='max_fps', metavar='N', default=45, help='goal fps of dynamic fps adjustment (default: 45)')
+    parser.add_argument('--joystep', dest='joystep', metavar='N', default=2, help='sensitivy of the joystick (default: 2)')
+
+    args = parser.parse_args()
+
+    return args
+
+def main(args):
     joystep = 1
-    maxjoystep = 2
-    frame_timeout = 0.01
-    max_fps = 45
-    start = time()
-    i = 0
-    fps = 0
-    show_server_fps = False
-    scenario = "doom1"
-    map = 1
-    # Create a UDP socket
+    maxjoystep = args.joystep    # drops joystick inputs to adjust sensitivity 
+    frame_timeout = 0.01     # initial frame_timeout
+    max_fps = args.max_fps   # the goal of the server side dynamic frame rate adjustment      
+    start = time()           # to calculate the fps
+    i = 1                    # frame counter
+    fps = 0              
+    scenario = "doom1"       # load doom1 shareware
+    map = 1                  # initial map id
+
+    running = False # indication if doom was already started
+
+    # Create an UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.settimeout(0.001)
+    sock.settimeout(0.001) # don't wait for replys
+
     # Bind the socket to the port
     server_address = ('localhost', 1312)
+    http_ip = find_ip() # retrieve the local IP of the http server (this machine)
+
     print(" * Doom starting up...")   
     sock.bind(server_address)
 
     while True:        
-        
         game = init(scenario, "E1M" + str(map)) # load map
-        if i == 0:
-           print(" * Ready. Please connect your console to <YOUR_IP>:8080")        
+
+        if not running:
+           running = True
+           print(" * Doom ready.")
+           if int(args.http_port) == 80:       
+               print("\033[1;32m * Please enter %s as manual DNS \033[0;32m" % (http_ip))
+               print("   (in the network settings of your Nintendo Switch)\033[0;39m")
+           else:
+               print("\033[1;32m * Please connect your console to this url: %s:%s \033[0;32m" % (http_ip, args.http_port))
+               print("   (using i.e. https://www.switchbru.com/dns/)\033[0;39m")
+
         data = 0
 
         while not game.is_episode_finished():        
@@ -128,7 +191,7 @@ def main():
 
             # Gets current screen buffer and updates frame on server 
             screen_buf = state.screen_buffer
-            if show_server_fps:
+            if args.server_fps:
                 screen_buf = fpscounter(screen_buf, fps)
             screen_buf = cv2.cvtColor(screen_buf, cv2.COLOR_BGR2RGB)            
             cv2.imwrite("static/tmp.jpg", screen_buf, [int(cv2.IMWRITE_JPEG_QUALITY), 75])
@@ -142,75 +205,43 @@ def main():
                 data = data.decode()
             except socket.timeout:
                 pass
+
+            # if there is any input execute it
             if data:      
-                if data == "INIT":
-                    print(" * Client connected.")
-                elif data == "left_down": #TURN_LEFT
-                    action=[True, False, 0, False, False, False, False, 0, False, False, False, False]
-                elif data == "right_down": #TURN_RIGHT
-                    action=[False, True, 0, False, False, False, False, 0, False, False, False, False]
-                elif data[0:7] == "Stick;1": #TURN_LEFT_RIGHT_DELTA + MOVE_FORWARD_BACKWARD_DELTA
-                    if joystep < maxjoystep:
-                        joystep+=1
-                        ax0 = ((float(data.split(";")[2])*10)/maxjoystep)*joystep
-                        ax1 = ((-float(data.split(";")[3])*30)/maxjoystep)*joystep
-                        action=[False, False, 0, False, False, False, False, 0, False, False, False, False]
-                        if ax0 < -1.5:
-                             action[0]=True
-                        elif ax0 > 1.5:
-                             action[1]=True
-                        if ax1 < -15:
-                             action[6]=True
-                        elif ax1 > 15:
-                             action[5]=True
-                    else:
-                        data = 0 
-                        joystep = 0
-                elif data == "sl_down": #MOVE_LEFT
-                    action=[False, False, 0, True, False, False, False, 0, False, False, False, False]  
-                elif data == "sr_down": #MOVE_RIGHT
-                    action=[False, False, 0, False, True, False, False, 0, False, False, False, False]                   
-                elif data == "up_down": #MOVE_FORWARD
-                    action=[False, False, 0, False, False, True, False, 0, False, False, False, False]
-                elif data == "down_down": #MOVE_BACKWARD
-                    action=[False, False, 0, False, False, False, True, 0, False, False, False, False]
-                elif data == "a_down": #ATTACK
-                    action=[False, False, 0, False, False, False, False, 0, True, False, False, False]
-                elif data == "y_down": #USE
-                    action=[False, False, 0, False, False, False, False, 0, False, True, False, False]
-                elif data == "zl_down": #SELECT_PREV_WEAPON
-                    action=[False, False, 0, False, False, False, False, 0, False, False, True, False]
-                elif data == "zr_down": #SELECT_NEXT_WEAPON
-                    action=[False, False, 0, False, False, False, False, 0, False, False, False, True]                   
-                else:
-                    action=[False, False, 0, False, False, False, False, 0, False, False, False, False]
+                data, joystep, action = get_action(data, joystep, maxjoystep)
             else:
                 action=[False, False, 0, False, False, False, False, 0, False, False, False, False]
+
             r = game.make_action(action)
             i+=1
 
             # dynamic fps adjustment
-            if i%30==0:                
+            if i%30==0:
+                i = 1                
                 fps = (30/(time()-start))
                 if fps < max_fps:
                     frame_timeout = frame_timeout - 0.05*frame_timeout
                 elif fps > max_fps:
                     frame_timeout = frame_timeout + 0.05*frame_timeout
-                start = time()            
-            sleep(frame_timeout)
+                start = time()
+            
+            sleep(frame_timeout) # Doom is has tic-based logic so we need to stop for a while after every frame to get a reasonable refresh rate
 
-        if game.get_last_reward() == 1:
+        if game.get_last_reward() == 1: # find out if the player died or found the exit
             map += 1
-            survived = True
+            print(" * Play survived the level. Starting next level.")
         else:
             print(" * Player died. Restart level.")
-        print("   Total reward:", game.get_total_reward())
         print("   ************************") 
 
-
 if __name__ == "__main__":
+
+    args = parse_arg() # parse the arguments supplied by the user or script
+
     try:
-        main()
-    except vzd.vizdoom.ViZDoomUnexpectedExitException:
-        print("Done.")
-        pass # surppress error message from stop.sh        
+        main(args)
+
+    except:
+#        os.system("rm static/img.jpg")
+        print("\n *\033[1;31m Server stopped.\033[0;36m")
+        

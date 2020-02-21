@@ -1,10 +1,9 @@
 from flask import Flask, request, render_template
-
 import socket
 import sys
 
 app = Flask(__name__)
-app.debug = True
+app.debug = False
 
 import logging
 log = logging.getLogger('werkzeug')
@@ -27,6 +26,6 @@ def index():
         send(key)
     return render_template("index.html")
 
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+if __name__=="__main__":
+    port = sys.argv[1]
+    app.run(host="0.0.0.0", port=port)

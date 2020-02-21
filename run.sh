@@ -1,3 +1,0 @@
-echo Server starting, please wait...
-python server.py &
-python doom.py &

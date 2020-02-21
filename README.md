@@ -12,28 +12,28 @@ To keep it simple, I used ViZDoom as my engine since it allows easy access to th
 
 ## But... why?
 Because everything needs to run Doom. Even patched Switch devices (Mariko and Lite) that to this date can't use soft modding exploits to run unsigned code.
-This isn't meant to be a good way of playing the game. The only reason this exists is because I wanted to push the browser to it's limits and learn JavaScript.
+This isn't meant to be a good way of playing the game. The only reason this exists is because I wanted to push the browser to it's limits and learn more about web development.
 
-Also, this repository can be used to do this for basically every game. I might make a separate repository for this and link it here.
+Also, this code can be used to do this for basically every game. I might make a separate repository for this and link it here.
 Basically, replace `doom.py` with your own game, make it handle the joycon inputs and save the frame buffer at `static/img.jpg`. Keep the resolution and jpeg quality on the lower side and you're good to go.
 
 ## How do I use this?
-(This works on Linux (Manjaro). I haven't tried this on Windows or OSX but I suppose it should work there too. You will have to make yourself a `run.bat` to replace the `run.sh` for Windows.)
+(This works on Linux (Manjaro). I haven't tried it on Windows or OSX.
 
-Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a working disk image so no one else has to go through the hells of compiling Doom on a RPi Zero.
+Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a working disk image so no one else has to go through the hells of compiling Doom on a RPi Zero. The goal would be to have a stand alone device to which you connect via wifi.)
 
 1. Clone this repository
    ```bash
    git clone https://github.com/z80z80z80/MarikoDoom.git
    cd MarikoDoom
    ```
-2. Install the dependencies (On raspbian python-opencv does not exist for pip. For installation instructions see [here](https://raspberrypi.stackexchange.com/questions/95982/how-to-install-opencv-on-raspbian-stretch))
+2. Install the dependencies
    
    First, make sure you have all [ViZDoom dependencies](https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#linux_deps) installed.
    
    After that, install the python dependencies:
    
-   `pip install flask cython vizdoom python-opencv --user`
+   `sudo pip install flask cython vizdoom python-opencv`
    
 3. Download doom1.wad
 
@@ -41,25 +41,14 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad
    mv doom1.wad scenarios/.
    ```
-4. Make run.sh and stop.sh executable
+4. Run the server
 
    ```bash
-   chmod +x run.sh
-   chmod +x stop.sh
+   sudo python run.py
    ```
-5. Run the server
+5. Connect your Nintendo Switch to the same network as your server and use the given IP address as manual DNS server in your network settings. Don't know how? [Here you go.](https://en-americas-support.nintendo.com/app/answers/detail/a_id/22411/~/how-to-manually-enter-dns-settings)
 
-   `./run.sh`
-6. Connect your Nintendo Switch to the same network as your server using the SwitchBru DNS 
-
-   For more informations see: [switchbru.com](https://www.switchbru.com/dns/)
-7. Find out your computers IP address and enter this as URL on the SwitchBru portal. Add it as costum link for convenience.
-
-   `<YOUR_IP>:8080`
-8. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
-
-9. To shut down the server:
-   `./stop.sh`
+6. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
 
 ## Controls
 The usable buttons are a bit limited since the browser uses B to go back and X to close the browser.

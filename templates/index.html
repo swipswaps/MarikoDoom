@@ -3,7 +3,7 @@
 
     <head>
         <title>Mariko DOOM</title>
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+        <script type="text/javascript" src="static/jquery-3.4.1.min.js"></script>
         <script type="text/javascript" src="static/fullscreen.js"></script> <!-- script that handles switching to fullscreen -->
         <script type="text/javascript" src="static/joycon.js"></script> <!-- handles joycon input, updates frames -->
         <script type="text/javascript" src="static/start.js"></script> <!-- starts the scripts when joycons are connected -->
@@ -12,13 +12,14 @@
     <body>	
 	<div id=container style="margin:auto;text-align:center;">
 	    <a> <!-- Using an image object instead of WebRTC since the switch browser does not support this. 
-		     This produces a ~3x stretched out image to fill the screen. Aspect ratio is kept. -->
-        	<img src="static/img.jpg" style="width:1280px;height:720px;" id="image" class="center"/>  
+		     This produces a ~3x stretched out image to fill the screen. Keeping the aspect ratio. -->
+        	<img src="static/placeholder.jpg" style="width:1280px;height:720px;" id="image" class="center"/>  
 	    </a>
 	</div>
 	
         <script type="text/javascript"> // script that actually toggles the fullscreen script 
             document.getElementById('container').onclick = function () {
+                document.getElementById("image").src="static/img.jpg";
 		fullscreen();
                 };	
 	</script> 
