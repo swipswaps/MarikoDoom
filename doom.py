@@ -242,6 +242,6 @@ if __name__ == "__main__":
         main(args)
 
     except:
-#        os.system("rm static/img.jpg")
+        os.system("rm -rf _vizdom vizdoom.ini vizdoom-crash.log") # don't at me, I know it's dirty...
         print("\n *\033[1;31m Server stopped.\033[0;36m")
         
