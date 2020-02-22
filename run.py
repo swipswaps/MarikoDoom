@@ -31,8 +31,6 @@ class DNSHandler(socketserver.BaseRequestHandler):
             name = str(b'.'.join(question['name']), encoding='UTF-8')
             if ((name == "ctest.cdn.nintendo.net") and (question['qtype'] == b'\x00\x01' and question['qclass'] == b'\x00\x01')):
                 accepted_questions.append(question)
-            else:
-                print('\033[31m{}\033[39m'.format(name))
 
         response = (
             self.dns_response_header(data) +
@@ -213,6 +211,8 @@ def find_ip():
 def parse_arg():
     parser = argparse.ArgumentParser(description='Game streaming server for Nintendo Switch', usage='python %(prog)s [options]')
     parser.add_argument('--port', dest='port', default=80, metavar='PORT', help='port of the http server (default = 80). If you don\'t want to run this with sudo, use --port 8080')
+    parser.add_argument('--fps', dest='fps', metavar='N', default=2, help='client fps (1 = 15FPS, 2 = 20FPS, default: 2)')    
+    parser.add_argument('--res', dest='res', metavar='N', default=1, help='resolution (1 = low, 2 = mid, default: 1)')
     args = parser.parse_args()
 
     return args
@@ -222,6 +222,8 @@ if __name__ == '__main__':
     # Minimal configuration - allow to pass IP in configuration    
     args = parse_arg()
     http_port = args.port
+    fps = args.fps
+    res = args.res
 
     print_logo()
 
@@ -233,4 +235,4 @@ if __name__ == '__main__':
         threading.Thread(target=run_server, args=[server], daemon=True).start()
     
     threading.Thread(target=os.system, args=["python http_server.py %s " % str(http_port)], daemon=True).start()
-    os.system("python doom.py --http %s" % str(http_port))
+    os.system("python doom.py --http %s --fps %s --res %s" % (str(http_port), str(fps), str(res)))

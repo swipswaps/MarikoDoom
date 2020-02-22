@@ -63,7 +63,7 @@ function getJoystick() {
 	if(joystick_timeout == 2){ //limit joystick data so it doesn't induce more lag
 		joystick_timeout = 0;        
 		for(var i=0;i<2; i+=2) {
-			if (((gp.axes[i] > 0.55) || (gp.axes[i] < -0.55)) || ((gp.axes[i+1] > 0.55) || (gp.axes[i+1] < -0.55))) {
+			if (((gp.axes[i] > 0.1) || (gp.axes[i] < -0.1)) || ((gp.axes[i+1] > 0.1) || (gp.axes[i+1] < -0.1))) {
 			sendJoystick(gp.axes[i], gp.axes[i+1])			
 			}
 		}

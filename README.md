@@ -1,12 +1,12 @@
 # MarikoDoom
-Play Doom on your Nintendo Switch without CFW!
+Play Doom on your Nintendo Switch without CFW.
 
 ## What is this?
 This repository lets you play the levels of the original Doom (shareware) in your Nintendo Switch's hidden browser. No costum firmware needed.
 
 Though, it won't be running on your Switch but rather on the computer you are running the server on.
 
-Effectively this is a crude game streaming server with kind of high latency, low resolution and "some" (lol) dropped frames, so yes, worse than Stadia ;) 
+Effectively this is a crude game streaming server with very low resolution and a low framerate. Even after optimizing the engine to minimize stuttering it still randomly happens. In this case close the browser, go to the home screen, reconnect and repeat if it still stutters. I'm not sure what is causing this but I suspect it's from filling the memory with a lot of cached frames (which to my knowledge is not a solveable issue...)
 
 To keep it simple, I used ViZDoom as my engine since it allows easy access to the frame buffer.
 
@@ -14,8 +14,8 @@ To keep it simple, I used ViZDoom as my engine since it allows easy access to th
 Because everything needs to run Doom. Even patched Switch devices (Mariko and Lite) that to this date can't use soft modding exploits to run unsigned code.
 This isn't meant to be a good way of playing the game. The only reason this exists is because I wanted to push the browser to it's limits and learn more about web development.
 
-Also, this code can be used to do this for basically every game. I might make a separate repository for this and link it here.
-Basically, replace `doom.py` with your own game, make it handle the joycon inputs and save the frame buffer at `static/img.jpg`. Keep the resolution and jpeg quality on the lower side and you're good to go.
+Also, this code can be used to do this for basically every game. I might eventually make a separate repository for this and link it here.
+Basically, replace `doom.py` with your own game, make it handle the joycon inputs and save the graphical output frame by frame at `static/img.jpg`. Keep the resolution and jpeg quality on the lower side (< 12kB per frame) and you're good to go.
 
 ## How do I use this?
 (This works on Linux (Manjaro). I haven't tried it on Windows or OSX.
@@ -46,6 +46,14 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    ```bash
    sudo python run.py
    ```
+   optional arguments:
+   ```bash
+   -h, --help   show this help message and exit
+   --port PORT  port of the http server (default = 80). If you don't want to run this with sudo, use --port 8080
+   --fps N      client fps (1 = 15FPS, 2 = 20FPS, default: 2)
+   --res N      resolution (1 = low, 2 = mid, default: 1)
+   ```
+   
 5. Connect your Nintendo Switch to the same network as your server and use the given IP address as manual DNS server in your network settings. Don't know how? [Here you go.](https://en-americas-support.nintendo.com/app/answers/detail/a_id/22411/~/how-to-manually-enter-dns-settings)
 
 6. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
