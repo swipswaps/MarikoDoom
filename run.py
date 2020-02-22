@@ -234,5 +234,5 @@ if __name__ == '__main__':
         print('\033[1;32m * Started DNS server.\033[0;39m')
         threading.Thread(target=run_server, args=[server], daemon=True).start()
     
-    threading.Thread(target=os.system, args=["python http_server.py %s " % str(http_port)], daemon=True).start()
+    threading.Thread(target=os.system, args=["python http_server.py %s %s" % (str(http_port), str(fps))], daemon=True).start()
     os.system("python doom.py --http %s --fps %s --res %s" % (str(http_port), str(fps), str(res)))

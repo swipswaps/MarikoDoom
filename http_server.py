@@ -1,13 +1,15 @@
 from flask import Flask, request, render_template
 import socket
 import sys
+import logging
 
 app = Flask(__name__)
 app.debug = False
 
-import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
+
+#fps = 1 # 1 = 15fps, 2 = 20fps
 
 def send(key):
     # Create a UDP socket
@@ -24,8 +26,15 @@ def index():
     if request.method == "POST":
         key = request.form["key"]
         send(key)
-    return render_template("index.html")
+
+    if fps == 1:
+        return render_template("index_15fps.html")
+    elif fps == 2:
+        return render_template("index_20fps.html")
+    else:
+        return render_template("index_20fps.html")
 
 if __name__=="__main__":
     port = sys.argv[1]
+    fps = int(sys.argv[2])
     app.run(host="0.0.0.0", port=port)
