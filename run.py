@@ -31,7 +31,8 @@ class DNSHandler(socketserver.BaseRequestHandler):
             name = str(b'.'.join(question['name']), encoding='UTF-8')
             if ((name == "ctest.cdn.nintendo.net") and (question['qtype'] == b'\x00\x01' and question['qclass'] == b'\x00\x01')):
                 accepted_questions.append(question)
-
+            else:
+                print(name)
         response = (
             self.dns_response_header(data) +
             self.dns_response_questions(accepted_questions) +
@@ -211,7 +212,9 @@ def find_ip():
 def parse_arg():
     parser = argparse.ArgumentParser(description='Game streaming server for Nintendo Switch', usage='python %(prog)s [options]')
     parser.add_argument('--port', dest='port', default=80, metavar='PORT', help='port of the http server (default = 80). If you don\'t want to run this with sudo, use --port 8080')
-    parser.add_argument('--ap', dest='ap', metavar='INT', default=False, help='start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)')    
+    parser.add_argument('--ap', dest='ap', metavar='INT', default=0, help='start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)')    
+    parser.add_argument('--c', dest='c', default=10, metavar='CHAN', help='wifi channel')
+    parser.add_argument('--sound', dest='sound', default=0, help='decativate sound on the host')
     parser.add_argument('--fps', dest='fps', metavar='N', default=2, help='client fps (1 = 15FPS, 2 = 20FPS, default: 2)')    
     parser.add_argument('--res', dest='res', metavar='N', default=1, help='resolution (1 = low, 2 = mid, default: 1)')
     args = parser.parse_args()
@@ -222,23 +225,25 @@ def parse_arg():
 if __name__ == '__main__':
     # Minimal configuration - allow to pass IP in configuration    
     args = parse_arg()
-    http_port = args.port
-    ap = args.ap
+    http_port = int(args.port)
+    ap = int(args.ap)
+    channel = int(args.c)
     fps = args.fps
     res = args.res    
+    sound = int(args.sound)
 
     print_logo()
     print(" * Starting up, please wait...")
     if http_port == 80:
-        IP = find_ip()
         host, dns_port = '', 53
         if not ap:
+            IP = find_ip()
             server = socketserver.ThreadingUDPServer((host, dns_port), DNSHandler)
             print('\033[1;32m * Started DNS server.\033[0;39m')
             threading.Thread(target=run_server, args=[server], daemon=True).start()
 
         else:
-            threading.Thread(target=os.system, args=["create_ap -n --redirect-to-localhost -w 1+2 %s MarikoDoom > /dev/null &" % ap], daemon=True).start()                   
+            threading.Thread(target=os.system, args=["create_ap -n -c %s --redirect-to-localhost -w 1+2 %s MarikoDoom" % (channel, ap)], daemon=True).start()                   
 
     threading.Thread(target=os.system, args=["python http_server.py %s %s" % (str(http_port), str(fps))], daemon=True).start()
-    os.system("python doom.py --http %s --ap %s --fps %s --res %s" % (str(http_port), str(ap), str(fps), str(res)))
+    os.system("python doom.py --serverfps 1 --http %s --ap %s --fps %s  --res %s --sound %s" % (str(http_port), str(ap), str(fps), str(res), str(sound)))

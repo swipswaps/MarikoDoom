@@ -31,6 +31,7 @@ def index():
 if __name__=="__main__":
     port = sys.argv[1]    
     fps = int(sys.argv[2])
+
     if fps == 1:
         template = "index_15fps.html"
         template = "index_20fps.html"

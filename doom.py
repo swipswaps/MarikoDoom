@@ -79,7 +79,7 @@ def init(scenario, map, client_res):
     game.set_sound_enabled(True)
 
     # Makes the window appear (turned on by default)
-    game.set_window_visible(False)
+    game.set_window_visible(True)
 
     # Sets ViZDoom mode (PLAYER, ASYNC_PLAYER, SPECTATOR, ASYNC_SPECTATOR, PLAYER mode is default)
     game.set_mode(vzd.Mode.PLAYER)
@@ -93,13 +93,14 @@ def init(scenario, map, client_res):
 
     return game
 
-def get_action(data, game, action):
+def get_action(data, game, action, sound):
     if not len(action):
         action = [False, False, 0, False, False, False, False, 0, False, False, False, False]
 
     if data == "INIT":
         print(" * Client connected.")
-        game.send_game_command("set snd_musicvolume 0.5")
+        if sound:
+            game.send_game_command("set snd_musicvolume 0.5")
         data = 0
     elif data == "left_down": #TURN_LEFT
         action[0] = True
@@ -151,7 +152,7 @@ def get_action(data, game, action):
 
 def fpscounter(img, fps): # shows server side fps counter
     font                   = cv2.FONT_HERSHEY_SIMPLEX
-    bottomLeftCornerOfText = (375,15)
+    bottomLeftCornerOfText = (img.shape[0]-20,15)
     fontScale              = 0.5
     fontColor              = (255,255,0)
     lineType               = 1
@@ -227,10 +228,10 @@ def restore_save(game, player_state):
 
 def parse_arg():
     parser = argparse.ArgumentParser(description='ViZDoom based Doom server.', usage='python %(prog)s [options]')
-    parser.add_argument('--nosound', dest='sound', default=True, help='decativate sound on the host')
+    parser.add_argument('--sound', dest='sound', default=0, help='decativate sound on the host')
     parser.add_argument('--http', dest='http_port', default=8080, metavar='PORT', help='port of the http server')
-    parser.add_argument('--ap', dest='ap', metavar='INT', default=False, help='start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)')    
-    parser.add_argument('--serverfps', dest='server_fps', default=False, help='show the server side fps in the top left corner')
+    parser.add_argument('--ap', dest='ap', metavar='INT', default=0, help='start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)')    
+    parser.add_argument('--serverfps', dest='server_fps', default=0, help='show the server side fps in the top left corner')
     parser.add_argument('--maxfps', dest='max_fps', metavar='N', default=35, help='goal fps of dynamic fps adjustment (default: 35)')
     parser.add_argument('--fps', dest='fps', metavar='N', default=2, help='client fps (1 = 15FPS, 2 = 20FPS, default: 2)')    
     parser.add_argument('--res', dest='res', metavar='N', default=1, help='resolution (1 = low, 2 = mid, default: 1)')
@@ -244,8 +245,11 @@ def main(args):
     frame_timeout = 0.01          # initial frame_timeout
     max_fps = int(args.max_fps)   # the goal of the server side dynamic frame rate adjustment   
     client_fps = int(args.fps)    # the refresh rate the user wishes to play at
+    server_fps = int(args.server_fps)
     client_res = int(args.res)    # the quality the user wishes to play at
     start = time()                # to calculate the fps
+    sound = int(args.sound)
+    ap = int(args.ap)
     i = 1                         # frame counter
     fps = 0              
     scenario = "doom1"            # load doom1 shareware
@@ -260,7 +264,8 @@ def main(args):
 
     # Bind the socket to the port
     server_address = ('localhost', 1312)
-    http_ip = find_ip() # retrieve the local IP of the http server (this machine)
+    if not ap:
+        http_ip = find_ip() # retrieve the local IP of the http server (this machine)
 
     print(" * Doom starting up...")   
     sock.bind(server_address)
@@ -271,11 +276,12 @@ def main(args):
         game = init(scenario, "E1M%s" % str(map), client_res) # load map
 
         if not running:
-            game.send_game_command("set snd_musicvolume 0.0")
-            game.send_game_command("set snd_mididevice -2") # using timidity++
+            if sound:
+                game.send_game_command("set snd_musicvolume 0.0")
+                game.send_game_command("set snd_mididevice -2") # using timidity++
             running = True
             print(" * Doom ready.")
-            if not args.ap:
+            if not ap:
                 if int(args.http_port) == 80:       
                     print("\033[1;32m * Please enter %s as manual DNS \033[0;32m" % (http_ip))
                     print("   (in the network settings of your Nintendo Switch)\033[0;39m")
@@ -285,8 +291,10 @@ def main(args):
             else:
                  print('\033[1;32m * Please connect to the "MarikoDoom" wifi access point with your Nintendo Switch.\033[0;39m')
         else:
-            game.send_game_command("set snd_musicvolume 0.5")
-        game.send_game_command("changemus d_e1m%s" % str(map))
+            if sound:
+                game.send_game_command("set snd_musicvolume 0.5")
+        if sound:
+            game.send_game_command("changemus d_e1m%s" % str(map))
 
         if survived:
             restore_save(game, player_state)
@@ -300,7 +308,7 @@ def main(args):
             # Gets current screen buffer and updates frame on server 
             screen_buf = state.screen_buffer
 
-            if args.server_fps: # based on fps and resolution use the best combination (performance/quality/playability)
+            if server_fps: # based on fps and resolution use the best combination (performance/quality/playability)
                 screen_buf = fpscounter(screen_buf, fps)
             if client_fps == 1:
                if client_res == 1:
@@ -329,7 +337,7 @@ def main(args):
 
             # if there is any input execute it
             if data:      
-                data, action = get_action(data, game, action)
+                data, action = get_action(data, game, action, sound)
                 if (action[2]!=0 or action[7]!=0):
                     data = 0
 
@@ -366,9 +374,11 @@ def main(args):
 if __name__ == "__main__":
 
     args = parse_arg() # parse the arguments supplied by the user or script    
-
+    main(args)
+    '''
     try:
         main(args)
     except:
         os.system("rm -rf _vizdoom _vizdoom.ini vizdoom-crash.log") # don't @ me, I know it's dirty...
         print("\n *\033[1;31m Server stopped.\033[0;36m")
+    '''
