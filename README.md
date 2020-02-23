@@ -33,16 +33,13 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
  
    After this, install [create_ap](https://github.com/oblique/create_ap):
  
-   - Ubuntu: 
-   '''bash 
-   sudo apt-get install hostapd
-   git clone https://www.github.com/oblique/create_ap && cd create_ap && make install
-   '''
+   - Ubuntu:    
+      `sudo apt-get install hostapd`
+   
+      `git clone https://www.github.com/oblique/create_ap && cd create_ap && make install`  
 
    - Arch/Manjaro:
-   '''bash
-   sudo pacman -S create_ap
-   '''
+      `sudo pacman -S create_ap`
 
    Finally, install the python dependencies:
    
