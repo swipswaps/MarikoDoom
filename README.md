@@ -45,7 +45,7 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    
    `sudo pip install flask cython vizdoom python-opencv`
 
-   Optional: If you want music in the game (played by the host of course) you will need to install [Timidity](https://wiki.archlinux.org/index.php/Timidity) and a [soundfont](http://www.arachnosoft.com/main/soundfont.php?music-packs). 
+   **Optional:** If you want music in the game (played by the host computer) you will need to install [Timidity](https://wiki.archlinux.org/index.php/Timidity) and a [soundfont](http://www.arachnosoft.com/main/download.php?id=soundfont-sf2). 
    
 3. Download doom1.wad
 
@@ -53,22 +53,33 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad
    mv doom1.wad scenarios/.
    ```
-4. Run the server
+4. Find out what your wifi interface is called
+
+   Usually it is either something like `wlan0` or `wlp2s0`:
+   ```bash
+   $ ip address
+   …
+   2: wlp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+   …
+   ```
+   
+5. Run the server
 
    ```bash
-   sudo python run.py
+   sudo python run.py --ap wlp2s0
    ```
    optional arguments:
-   ```bash
+   ```
    -h, --help   show this help message and exit
    --port PORT  port of the http server (default = 80). If you don't want to run this with sudo, use --port 8080
+   --ap INT     start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)
    --fps N      client fps (1 = 15FPS, 2 = 20FPS, default: 2)
    --res N      resolution (1 = low, 2 = mid, default: 1)
    ```
    
-5. Connect your Nintendo Switch to the same network as your server and use the given IP address as manual DNS server in your network settings. Don't know how? [Here you go.](https://en-americas-support.nintendo.com/app/answers/detail/a_id/22411/~/how-to-manually-enter-dns-settings)
+6. Connect your Nintendo Switch to the newly created wifi access point `MarikoDoom`.
 
-6. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
+7. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
 
 ## Controls
 The usable buttons are a bit limited since the browser uses B to go back and X to close the browser.
@@ -87,4 +98,3 @@ DPad up | Move forward
 DPad down | Move backward
 Shoulder L | Move left
 Shoulder R | Move right
-
