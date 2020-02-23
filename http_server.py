@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import socket
 import sys
 import logging
@@ -16,7 +16,7 @@ def send(key):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_address = ('localhost', 1312)
     message = str.encode(key)
-
+    
     # Send data
     sent = sock.sendto(message, server_address)
     sock.close()
@@ -25,16 +25,15 @@ def send(key):
 def index():
     if request.method == "POST":
         key = request.form["key"]
-        send(key)
-
-    if fps == 1:
-        return render_template("index_15fps.html")
-    elif fps == 2:
-        return render_template("index_20fps.html")
-    else:
-        return render_template("index_20fps.html")
+        send(key)        
+    return render_template(template)
 
 if __name__=="__main__":
-    port = sys.argv[1]
+    port = sys.argv[1]    
     fps = int(sys.argv[2])
+    if fps == 1:
+        template = "index_15fps.html"
+        template = "index_20fps.html"
+    else:
+        template = "index_20fps.html"
     app.run(host="0.0.0.0", port=port)

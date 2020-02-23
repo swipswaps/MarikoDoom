@@ -29,11 +29,26 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    ```
 2. Install the dependencies
    
-   First, make sure you have all [ViZDoom dependencies](https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#linux_deps) installed.
-   
-   After that, install the python dependencies:
+   First, make sure you have all [ViZDoom dependencies](https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#linux_deps) installed.      
+ 
+   After this, install [create_ap](https://github.com/oblique/create_ap):
+ 
+   - Ubuntu: 
+   '''bash 
+   sudo apt-get install hostapd
+   git clone https://www.github.com/oblique/create_ap && cd create_ap && make install
+   '''
+
+   - Arch/Manjaro:
+   '''bash
+   sudo pacman -S create_ap
+   '''
+
+   Finally, install the python dependencies:
    
    `sudo pip install flask cython vizdoom python-opencv`
+
+   Optional: If you want music in the game (played by the host of course) you will need to install [Timidity](https://wiki.archlinux.org/index.php/Timidity) and a [soundfont](http://www.arachnosoft.com/main/soundfont.php?music-packs). 
    
 3. Download doom1.wad
 
@@ -75,3 +90,4 @@ DPad up | Move forward
 DPad down | Move backward
 Shoulder L | Move left
 Shoulder R | Move right
+
