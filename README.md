@@ -1,7 +1,6 @@
 # MarikoDoom
 Play Doom on your Nintendo Switch without CFW.
 
-## Demo 
 [![YouTube Demo](https://media.giphy.com/media/Q6xeyt58HPv90KvDk7/giphy.gif)](https://www.youtube.com/watch?v=qUC7FK2SCnU) 
 
 (Click to watch the full video on YouTube.)
