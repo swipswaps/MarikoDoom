@@ -56,7 +56,7 @@ def init(scenario, map, client_res):
 
     # Adds all needed variables
     game.add_available_game_variable(vzd.GameVariable.HEALTH)
-    game.add_available_game_variable(vzd.GameVariable.ARMOR)
+
     game.add_available_game_variable(vzd.GameVariable.AMMO2)
     game.add_available_game_variable(vzd.GameVariable.AMMO3)
     game.add_available_game_variable(vzd.GameVariable.AMMO4)
@@ -174,7 +174,6 @@ def find_ip():
 def save(game):
     player_state = {
         "HEALTH": game.get_game_variable(vzd.GameVariable.HEALTH),
-        "ARMOR": game.get_game_variable(vzd.GameVariable.ARMOR),
 
         "AMMO2": game.get_game_variable(vzd.GameVariable.AMMO2),
         "AMMO3": game.get_game_variable(vzd.GameVariable.AMMO3),
@@ -198,9 +197,7 @@ def restore_save(game, player_state):
     if player_state["HEALTH"] < 100:
         game.send_game_command("take health %s" % str(int(100-player_state["HEALTH"])))
     else:
-        game.send_game_command("give health %s" % str(int(100-player_state["HEALTH"])))
-    if player_state["ARMOR"]:
-        game.send_game_command("give ARMOR %s" % str(int(player_state["ARMOR"])))
+        game.send_game_command("give health %s" % str(int(player_state["HEALTH"]-100)))
 
     if player_state["WEAPON1"] == 2.0:
         game.send_game_command("give Chainsaw")   
@@ -220,7 +217,7 @@ def restore_save(game, player_state):
     if player_state["AMMO2"] < 50:
         game.send_game_command("take Clip %s" % str(50 - player_state["AMMO2"]))     
     else:
-        game.send_game_command("give Clip %s" % str(50 - player_state["AMMO2"]))     
+        game.send_game_command("give Clip %s" % str(player_state["AMMO2"]-50))     
     if player_state["AMMO3"]:
         game.send_game_command("give Shell %s" % str(player_state["AMMO3"]))     
     if player_state["AMMO5"]:
@@ -306,7 +303,7 @@ def main(args):
 
         data = 0
 
-        while not game.is_episode_finished():        
+        while not game.is_episode_finished():       
             # Gets the state
             state = game.get_state()    
             
