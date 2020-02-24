@@ -1,6 +1,11 @@
 # MarikoDoom
 Play Doom on your Nintendo Switch without CFW.
 
+## Demo 
+[![YouTube Demo](https://media.giphy.com/media/Q6xeyt58HPv90KvDk7/giphy.gif)](https://www.youtube.com/watch?v=qUC7FK2SCnU) 
+
+(Click to watch the full video on YouTube.)
+
 ## What is this?
 This repository lets you play the levels of the original Doom (shareware) in your Nintendo Switch's hidden browser. No costum firmware needed.
 
@@ -22,12 +27,12 @@ Basically, replace `doom.py` with your own game, make it handle the joycon input
 
 Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a working disk image so no one else has to go through the hells of compiling Doom on a RPi Zero. The goal would be to have a stand alone device to which you connect via wifi.)
 
-1. Clone this repository
+**1. Clone this repository**
    ```bash
    git clone https://github.com/z80z80z80/MarikoDoom.git
    cd MarikoDoom
    ```
-2. Install the dependencies
+**2. Install the dependencies**
    
    First, make sure you have all [ViZDoom dependencies](https://github.com/mwydmuch/ViZDoom/blob/master/doc/Building.md#linux_deps) installed.      
  
@@ -42,20 +47,21 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
       `sudo pacman -S create_ap`
 
    Finally, install the python dependencies:
-   
-   `sudo pip install flask cython vizdoom python-opencv`
+   ```bash
+   sudo pip install flask cython vizdoom python-opencv
+   ```
 
    **Optional:** If you want music in the game (played by the host computer) you will need to install [Timidity](https://wiki.archlinux.org/index.php/Timidity) and a [soundfont](http://www.arachnosoft.com/main/download.php?id=soundfont-sf2). 
    
-3. Download doom1.wad
+**3. Download doom1.wad**
 
    ```bash
    wget http://distro.ibiblio.org/pub/linux/distributions/slitaz/sources/packages/d/doom1.wad
    mv doom1.wad scenarios/.
    ```
-4. Find out what your wifi interface is called
+**4. Find out what your wifi interface is called**
 
-   Usually it is either something like `wlan0` or `wlp2s0`:
+   Usually it is something like `wlan0` or `wlp2s0`:
    ```bash
    $ ip address
    …
@@ -63,10 +69,10 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    …
    ```
    
-5. Run the server
+**5. Run the server**
 
    ```bash
-   sudo python run.py --ap wlp2s0
+   sudo python run.py --ap YOUR_INTERFACE
    ```
    optional arguments:
    ```
@@ -77,9 +83,9 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    --res N      resolution (1 = low, 2 = mid, default: 1)
    ```
    
-6. Connect your Nintendo Switch to the newly created wifi access point `MarikoDoom`.
+**6. Connect your Nintendo Switch to the newly created wifi access point `MarikoDoom`.**
 
-7. Tap the image to go fullscreen, click the left joystick and you are playing Doom.
+**7. Tap the image to go fullscreen, click the left joystick and you are playing Doom.**
 
 ## Controls
 The usable buttons are a bit limited since the browser uses B to go back and X to close the browser.
