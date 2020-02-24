@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask, request, render_template, redirect
 import socket
 import sys
@@ -8,8 +10,8 @@ app.debug = False
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
-
-#fps = 1 # 1 = 15fps, 2 = 20fps
+log.disabled = True
+app.logger.disabled = True
 
 def send(key):
     # Create a UDP socket

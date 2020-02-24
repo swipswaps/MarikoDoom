@@ -76,10 +76,13 @@ Once I get it to run on a Raspberry Pi, instructions will be added. Or rather a 
    optional arguments:
    ```
    -h, --help   show this help message and exit
-   --port PORT  port of the http server (default = 80). If you don't want to run this with sudo, use --port 8080
+   --port PORT  port of the http server (default: 80). If you don't want to run this with sudo, use --port 8080
    --ap INT     start ap with interface INT (see "ip address" to find your wifi interface, i.e. wlan0 or wlp2s0)
+   --c CHAN     wifi channel
+   --sound N    activate sound on the host (default: 1)
    --fps N      client fps (1 = 15FPS, 2 = 20FPS, default: 2)
    --res N      resolution (1 = low, 2 = mid, default: 1)
+   --verbose N  show debug information (default: 0)
    ```
    
 **6. Connect your Nintendo Switch to the newly created wifi access point `MarikoDoom`.**

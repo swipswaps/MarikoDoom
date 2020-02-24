@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import vizdoom as vzd
 import cv2, os 
 from time import sleep, time
@@ -79,7 +81,7 @@ def init(scenario, map, client_res):
     game.set_sound_enabled(True)
 
     # Makes the window appear (turned on by default)
-    game.set_window_visible(True)
+    game.set_window_visible(False)
 
     # Sets ViZDoom mode (PLAYER, ASYNC_PLAYER, SPECTATOR, ASYNC_SPECTATOR, PLAYER mode is default)
     game.set_mode(vzd.Mode.PLAYER)
@@ -110,7 +112,7 @@ def get_action(data, game, action, sound):
         ax0 = float(data.split(";")[2])
         ax1 = -float(data.split(";")[3])
         if (ax0>0.2 or ax0<-0.2 or ax1>0.2 or ax1<-0.2):
-            action[2]=ax0*10
+            action[2]=ax0*7.5
             action[7]=ax1*30
 
     elif data == "sl_down": #MOVE_LEFT
@@ -194,11 +196,11 @@ def save(game):
 
 def restore_save(game, player_state):
     if player_state["HEALTH"] < 100:
-        game.send_game_command("take health %s" % str(100-player_state["HEALTH"]))
+        game.send_game_command("take health %s" % str(int(100-player_state["HEALTH"])))
     else:
-        game.send_game_command("give health %s" % str(100-player_state["HEALTH"]))
+        game.send_game_command("give health %s" % str(int(100-player_state["HEALTH"])))
     if player_state["ARMOR"]:
-        game.send_game_command("give ARMOR %s" % str(100-player_state["ARMOR"]))
+        game.send_game_command("give ARMOR %s" % str(int(player_state["ARMOR"])))
 
     if player_state["WEAPON1"] == 2.0:
         game.send_game_command("give Chainsaw")   
@@ -222,7 +224,7 @@ def restore_save(game, player_state):
     if player_state["AMMO3"]:
         game.send_game_command("give Shell %s" % str(player_state["AMMO3"]))     
     if player_state["AMMO5"]:
-        game.send_game_command("give RockeAmmo %s" % str(player_state["AMMO5"]))     
+        game.send_game_command("give RocketAmmo %s" % str(player_state["AMMO5"]))     
     if player_state["AMMO6"] or player_state["AMMO7"]:
         game.send_game_command("give Cell %s" % str(player_state["AMMO6"]))       
 
@@ -249,7 +251,10 @@ def main(args):
     client_res = int(args.res)    # the quality the user wishes to play at
     start = time()                # to calculate the fps
     sound = int(args.sound)
-    ap = int(args.ap)
+    if type(args.ap) != str:
+        ap = int(args.ap)
+    else:
+        ap = args.ap
     i = 1                         # frame counter
     fps = 0              
     scenario = "doom1"            # load doom1 shareware
